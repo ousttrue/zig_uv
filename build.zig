@@ -47,6 +47,65 @@ const LIBUV_SOURCES_WINDOWS = [_][]const u8{
     "libuv/src/win/winsock.c",
 };
 
+const LIBUV_DEFINITIONS_WINDOWS = [_][]const u8{
+    "-DWIN32_LEAN_AND_MEAN",
+    "-D_WIN32_WINNT=0x0602",
+};
+
+const LIBUV_LIBS_WINDOWS = [_][]const u8{
+    "psapi",
+    "user32",
+    "advapi32",
+    "iphlpapi",
+    "userenv",
+    "ws2_32",
+};
+
+const LIBUV_SOURCES_UNIX = [_][]const u8{
+    "libuv/src/unix/async.c",
+    "libuv/src/unix/core.c",
+    "libuv/src/unix/dl.c",
+    "libuv/src/unix/fs.c",
+    "libuv/src/unix/getaddrinfo.c",
+    "libuv/src/unix/getnameinfo.c",
+    "libuv/src/unix/loop-watcher.c",
+    "libuv/src/unix/loop.c",
+    "libuv/src/unix/pipe.c",
+    "libuv/src/unix/poll.c",
+    "libuv/src/unix/process.c",
+    "libuv/src/unix/random-devurandom.c",
+    "libuv/src/unix/signal.c",
+    "libuv/src/unix/stream.c",
+    "libuv/src/unix/tcp.c",
+    "libuv/src/unix/thread.c",
+    "libuv/src/unix/tty.c",
+    "libuv/src/unix/udp.c",
+    "libuv/src/unix/proctitle.c",
+};
+
+const LIBUV_DEFINITIONS_UNIX = [_][]const u8{
+    // "-D_FILE_OFFSET_BITS=64",
+    "-D_LARGEFILE_SOURCE",
+};
+
+const LIBUV_DEFINITIONS_LINUX = [_][]const u8{
+    "-D_GNU_SOURCE", "-D_POSIX_C_SOURCE=200112",
+};
+
+const LIBUV_LIBS_LINUX = [_][]const u8{
+    "dl", "rt",
+};
+
+const LIBUV_SOURCES_LINUX = [_][]const u8{
+    "libuv/src/unix/linux-core.c",
+    "libuv/src/unix/linux-inotify.c",
+    "libuv/src/unix/linux-syscalls.c",
+    "libuv/src/unix/procfs-exepath.c",
+    "libuv/src/unix/random-getrandom.c",
+    "libuv/src/unix/random-sysctl-linux.c",
+    "libuv/src/unix/epoll.c",
+};
+
 pub fn build(b: *std.build.Builder) void {
     // Standard target options allows the person running `zig build` to choose
     // what target to build for. Here we do not override the defaults, which
@@ -69,19 +128,19 @@ pub fn build(b: *std.build.Builder) void {
     // exe.addIncludePath("libuv/include/uv");
     exe.addIncludePath("libuv/src");
     exe.addPackage(c_pkg);
-    exe.addCSourceFiles(&(LIBUV_SOURCES ++ LIBUV_SOURCES_WINDOWS), &.{
-        "-DWIN32_LEAN_AND_MEAN",
-        "-D_WIN32_WINNT=0x0602",
-    });
-    for (&[_][]const u8{
-        "psapi",
-        "user32",
-        "advapi32",
-        "iphlpapi",
-        "userenv",
-        "ws2_32",
-    }) |lib| {
-        exe.linkSystemLibrary(lib);
+    if (target.isWindows()) {
+        exe.addCSourceFiles(&(LIBUV_SOURCES ++ LIBUV_SOURCES_WINDOWS), &LIBUV_DEFINITIONS_WINDOWS);
+        for (&LIBUV_LIBS_WINDOWS) |lib| {
+            exe.linkSystemLibrary(lib);
+        }
+    } else {
+        exe.addCSourceFiles(
+            &(LIBUV_SOURCES ++ LIBUV_SOURCES_UNIX ++ LIBUV_SOURCES_LINUX),
+            &(LIBUV_DEFINITIONS_UNIX ++ LIBUV_DEFINITIONS_LINUX),
+        );
+        for (&LIBUV_LIBS_LINUX) |lib| {
+            exe.linkSystemLibrary(lib);
+        }
     }
 
     exe.install();
