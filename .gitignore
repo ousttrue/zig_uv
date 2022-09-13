@@ -1,0 +1,6 @@
+zig-out
+zig-cache
+.zig-cache
+c.lib*
+libc.*
+libuv-v1.48.0
