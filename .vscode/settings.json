@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "internal.h": "c",
+        "errno.h": "c"
+    }
+}
