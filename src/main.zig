@@ -22,6 +22,7 @@ var tick: c.uv_timer_t = undefined;
 var width: c_int = undefined;
 var height: c_int = undefined;
 var pos: c_int = 0;
+var signal: c.uv_signal_t = undefined;
 
 fn update(req: [*c]c.uv_timer_t) callconv(.C) void {
     _ = req;
@@ -37,6 +38,17 @@ fn update(req: [*c]c.uv_timer_t) callconv(.C) void {
     pos += 1;
     if (pos > height) {
         _ = c.uv_timer_stop(&tick);
+        _ = c.uv_signal_stop(&signal);
+    }
+}
+
+fn resize(handle: [*c]c.uv_signal_t, signum: c_int) callconv(.C) void {
+    _ = handle;
+    if (signum == c.SIGWINCH) {
+        if (c.uv_tty_get_winsize(&tty, &width, &height) != 0) {
+            std.debug.print("Could not get TTY information\n", .{});
+            return;
+        }
     }
 }
 
@@ -53,6 +65,9 @@ pub fn main() !void {
     }
 
     std.debug.print("Width {}, height {}\n", .{ width, height });
+
+    _ = c.uv_signal_init(loop, &signal);
+    _ = c.uv_signal_start(&signal, resize, c.SIGWINCH);
 
     _ = c.uv_timer_init(loop, &tick);
     _ = c.uv_timer_start(&tick, update, 200, 200);
