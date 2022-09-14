@@ -106,6 +106,10 @@ const LIBUV_SOURCES_LINUX = [_][]const u8{
     "libuv/src/unix/epoll.c",
 };
 
+const DEBUG_FLAGS = [_][]const u8{
+    "-g",
+};
+
 pub fn build(b: *std.build.Builder) void {
     // Standard target options allows the person running `zig build` to choose
     // what target to build for. Here we do not override the defaults, which
@@ -129,14 +133,14 @@ pub fn build(b: *std.build.Builder) void {
     exe.addIncludePath("libuv/src");
     exe.addPackage(c_pkg);
     if (target.isWindows()) {
-        exe.addCSourceFiles(&(LIBUV_SOURCES ++ LIBUV_SOURCES_WINDOWS), &LIBUV_DEFINITIONS_WINDOWS);
+        exe.addCSourceFiles(&(LIBUV_SOURCES ++ LIBUV_SOURCES_WINDOWS), &(LIBUV_DEFINITIONS_WINDOWS ++ DEBUG_FLAGS));
         for (&LIBUV_LIBS_WINDOWS) |lib| {
             exe.linkSystemLibrary(lib);
         }
     } else {
         exe.addCSourceFiles(
             &(LIBUV_SOURCES ++ LIBUV_SOURCES_UNIX ++ LIBUV_SOURCES_LINUX),
-            &(LIBUV_DEFINITIONS_UNIX ++ LIBUV_DEFINITIONS_LINUX),
+            &(LIBUV_DEFINITIONS_UNIX ++ LIBUV_DEFINITIONS_LINUX ++ DEBUG_FLAGS),
         );
         for (&LIBUV_LIBS_LINUX) |lib| {
             exe.linkSystemLibrary(lib);
