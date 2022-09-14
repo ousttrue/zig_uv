@@ -15,19 +15,47 @@ fn uvWrite(req: *c.uv_write_t, stream: *anyopaque, msg: []const u8) !void {
     );
 }
 
+const message = "  Hello TTY  ";
+var tty: c.uv_tty_t = undefined;
+var write_req: c.uv_write_t = undefined;
+var tick: c.uv_timer_t = undefined;
+var width: c_int = undefined;
+var height: c_int = undefined;
+var pos: c_int = 0;
+
+fn update(req: [*c]c.uv_timer_t) callconv(.C) void {
+    _ = req;
+
+    var data: [500]u8 = undefined;
+
+    uvWrite(&write_req, &tty, std.fmt.bufPrint(
+        &data,
+        "\x1B[2J\x1B[H\x1B[{}B\x1B[{}C\x1B[42;37m{s}",
+        .{ pos, @divTrunc(width - message.len, @as(c_int, 2)), message },
+    ) catch unreachable) catch unreachable;
+
+    pos += 1;
+    if (pos > height) {
+        _ = c.uv_timer_stop(&tick);
+    }
+}
+
 pub fn main() !void {
     const loop = c.uv_default_loop();
-    var tty: c.uv_tty_t = undefined;
+
     _ = c.uv_tty_init(loop, &tty, 1, 0);
     _ = c.uv_tty_set_mode(&tty, 0);
     defer _ = c.uv_tty_reset_mode();
 
-    if (c.uv_guess_handle(1) == c.UV_TTY) {
-        var req0: c.uv_write_t = undefined;
-        try uvWrite(&req0, &tty, "\x1B[41;37m");
+    if (c.uv_tty_get_winsize(&tty, &width, &height) != 0) {
+        std.debug.print("Could not get TTY information\n", .{});
+        return;
     }
-    var req1: c.uv_write_t = undefined;
-    try uvWrite(&req1, &tty, "Hello TTY\n");
+
+    std.debug.print("Width {}, height {}\n", .{ width, height });
+
+    _ = c.uv_timer_init(loop, &tick);
+    _ = c.uv_timer_start(&tick, update, 200, 200);
 
     _ = c.uv_run(loop, c.UV_RUN_DEFAULT);
 }
