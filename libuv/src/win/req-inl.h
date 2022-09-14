@@ -82,8 +82,11 @@
   }
 
 
+// https://github.com/dotnet/runtime/pull/73657
 INLINE static uv_req_t* uv__overlapped_to_req(OVERLAPPED* overlapped) {
-  return CONTAINING_RECORD(overlapped, uv_req_t, u.io.overlapped);
+  size_t offset = offsetof(uv_req_t, u.io.overlapped);
+  return (uv_req_t*)((PCHAR)overlapped - offset);
+  // return CONTAINING_RECORD(overlapped, uv_req_t, u.io.overlapped);
 }
 
 
