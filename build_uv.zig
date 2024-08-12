@@ -109,15 +109,18 @@ const DEBUG_FLAGS = [_][]const u8{
     "-Ilibuv/src",
 };
 
+pub const Lib = struct {
+    compile: *std.Build.Step.Compile,
+    windows_system_libs: @TypeOf(LIBUV_LIBS_WINDOWS),
+    include: std.Build.LazyPath,
+};
+
 pub fn build(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     dep: *std.Build.Dependency,
-) struct {
-    compile: *std.Build.Step.Compile,
-    windows_system_libs: @TypeOf(LIBUV_LIBS_WINDOWS),
-} {
+) Lib {
     const lib = b.addStaticLibrary(.{
         .target = target,
         .optimize = optimize,
@@ -136,5 +139,6 @@ pub fn build(
     return .{
         .compile = lib,
         .windows_system_libs = LIBUV_LIBS_WINDOWS,
+        .include = dep.path("include"),
     };
 }
