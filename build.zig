@@ -124,10 +124,11 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .target = target,
         .optimize = optimize,
-        .name = "zig_uv",
+        .name = "sample",
         .root_source_file = b.path("src/main.zig"),
     });
-    exe.linkLibrary(libuv);
+    exe.root_module.addImport("uv", &libuv.root_module);
+    // exe.linkLibrary(libuv);
     exe.linkLibC();
     b.installArtifact(exe);
 
@@ -148,7 +149,8 @@ fn build_libuv(
     const lib = b.addStaticLibrary(.{
         .target = target,
         .optimize = optimize,
-        .name = "libuv",
+        .name = "uv",
+        .root_source_file = b.path("c.zig"),
     });
     lib.linkLibC();
     lib.addIncludePath(dep.path("include"));

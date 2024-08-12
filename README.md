@@ -1,7 +1,5 @@
 # zig から libuv する
 
-`@cImport` するとうまくいかないので手を考える。
-
 ## dependencies
 
 ```sh

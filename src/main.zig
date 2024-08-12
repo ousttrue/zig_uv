@@ -1,6 +1,5 @@
 const std = @import("std");
-// const c = @import("c");
-const uv = @import("uv.zig");
+const uv = @import("uv");
 
 // fn castStream(p: *anyopaque) *c.uv_stream_t {
 //     return @ptrCast(*c.uv_stream_t, @alignCast(@alignOf(c.uv_stream_t), p));
@@ -104,6 +103,6 @@ pub fn main() !void {
     // _ = c.uv_timer_start(&tick, update, 200, 200);
 
     std.debug.print("begin\n", .{});
-    _ = uv.uv_run(loop, .DEFAULT);
+    _ = uv.uv_run(loop, 0);
     std.debug.print("end\n", .{});
 }
