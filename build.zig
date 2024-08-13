@@ -9,6 +9,8 @@ pub fn build(b: *std.Build) void {
     const libuv_dep = b.dependency("libuv", .{});
     const libuv = build_uv.build(b, target, optimize, libuv_dep);
 
+    const translated = buildTranslated(b, target, optimize);
+
     for (uvbook.samples) |sample| {
         {
             const src = libuv_dep.path(b.fmt("docs/code/{s}/main.c", .{sample}));
@@ -31,9 +33,29 @@ pub fn build(b: *std.Build) void {
                 sample,
                 src,
             );
+            exe.root_module.addImport("translated", &translated.root_module);
             b.installArtifact(exe);
         }
     }
+}
+
+fn buildTranslated(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) *std.Build.Step.Compile {
+    // > zig translate-c
+    // -I "zig\0.13.0\files\lib\include"
+    // -I "zig\0.13.0\files\lib\libc\include\any-windows-any"
+    // -I LOCALAPPDIR\zig\p\122023c580b23f2c7e08dbcab26190ac4b503f1516f702013821475817289088b585\include > translated.zig
+    // LOCALAPPDIR\zig\p\122023c580b23f2c7e08dbcab26190ac4b503f1516f702013821475817289088b585\include\uv.h
+    const lib = b.addStaticLibrary(.{
+        .target = target,
+        .optimize = optimize,
+        .name = "translated",
+        .root_source_file = b.path("translated.zig"),
+    });
+    return lib;
 }
 
 fn buildC(

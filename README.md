@@ -4,8 +4,42 @@
 
 ## dependencies
 
+`master required` `v1.48.0` has CONTAINING_RECORD issue.
+
 ```sh
-> zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
+> zig fetch --save=libuv git+https://github.com/libuv/libuv.git
+```
+
+## trobule
+
+### CONTAINING_RECORD cause runtime INVALID INSTRUCTION
+
+patch for src/win/req-inl.h
+
+```c
+INLINE static uv_req_t* uv__overlapped_to_req(OVERLAPPED* overlapped) {
+  // cause illegal instruction
+  // return CONTAINING_RECORD(overlapped, uv_req_t, u.io.overlapped);
+  return (uv_req_t*)((char*)overlapped - offsetof(uv_req_t, u.io.overlapped));
+}
+```
+
+same https://github.com/libuv/libuv/pull/4254
+
+merged 2024/08/06
+
+### uv_pipe_t has dependency loop
+
+- https://github.com/ziglang/zig/issues/18247
+
+```zig
+pub const struct_uv_stream_s = extern struct {
+    read_cb: uv_read_cb = @import("std").mem.zeroes(uv_read_cb),
+};
+
+// 👆👇
+
+pub const uv_read_cb = ?*const fn ([*c]uv_stream_t, isize, [*c]const uv_buf_t) callconv(.C) void;
 ```
 
 ## uvbook
@@ -30,20 +64,6 @@
 | [idle-basic](https://github.com/libuv/libuv/blob/v1.x/docs/code/idle-basic/main.c) | o       | o   |     |
 
 ### [Filesystem](https://docs.libuv.org/en/v1.x/guide/filesystem.html)
-
-patch for src/win/req-inl.h
-
-```c
-INLINE static uv_req_t* uv__overlapped_to_req(OVERLAPPED* overlapped) {
-  // cause illegal instruction
-  // return CONTAINING_RECORD(overlapped, uv_req_t, u.io.overlapped);
-  return (uv_req_t*)((char*)overlapped - offsetof(uv_req_t, u.io.overlapped));
-}
-```
-
-same https://github.com/libuv/libuv/pull/4254
-
-merged 2024/08/06
 
 | name                                                                           | c-win32 | zig |     |
 | ------------------------------------------------------------------------------ | ------- | --- | --- |
