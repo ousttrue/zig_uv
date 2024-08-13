@@ -17,36 +17,40 @@ pub fn build(b: *std.Build) void {
                 .optimize = optimize,
                 .name = sample.name,
             });
+            // entry point
             exe.addCSourceFile(.{
                 .file = b.path(b.fmt("uvbook/{s}/main.c", .{sample.name})),
             });
-            exe.linkLibrary(libuv.compile);
             exe.addIncludePath(libuv.include);
+            exe.linkLibrary(libuv.compile);
+            // link for libuv
             for (&libuv.windows_system_libs) |lib| {
                 exe.linkSystemLibrary(lib);
             }
             b.installArtifact(exe);
-
+            // run
             const run = b.addRunArtifact(exe);
             b.step(
                 b.fmt("c-{s}", .{sample.name}),
                 b.fmt("run {s}", .{sample.name}),
             ).dependOn(&run.step);
         }
-        {
+        if (sample.get_zig(b)) |src| {
             // zig
             const exe = b.addExecutable(.{
                 .target = target,
                 .optimize = optimize,
                 .name = sample.name,
-                .root_source_file = b.path(b.fmt("uvbook/{s}/main.zig", .{sample.name})),
+                // entry point
+                .root_source_file = b.path(src),
             });
             exe.root_module.addImport("uv", &libuv.compile.root_module);
+            // link for libuv
             for (&libuv.windows_system_libs) |lib| {
                 exe.linkSystemLibrary(lib);
             }
             b.installArtifact(exe);
-
+            // run
             const run = b.addRunArtifact(exe);
             b.step(
                 b.fmt("zig-{s}", .{sample.name}),

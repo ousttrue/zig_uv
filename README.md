@@ -23,3 +23,4 @@ zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
 | name       | c   | zig |
 | ---------- | --- | --- |
 | helloworld | o   | o   |
+| idle-basic | o   |     |
