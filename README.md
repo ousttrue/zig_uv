@@ -77,22 +77,22 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Networking](https://docs.libuv.org/en/v1.x/guide/networking.html)
 
-| name                                                                                         | c-win32 | zig |              |
-| -------------------------------------------------------------------------------------------- | ------- | --- | ------------ |
-| [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o   | TODO: client |
-| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o   |              |
-| [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       |     |              |
-| [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       |     |              |
+| name                                                                                         | c-win32 | zig |                |
+| -------------------------------------------------------------------------------------------- | ------- | --- | -------------- |
+| [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o   | TODO: client   |
+| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o   |                |
+| [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       | x   | TODO: not work |
+| [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       | x   | @cimport error |
 
 ### [Threads](https://docs.libuv.org/en/v1.x/guide/threads.html)
 
-| name          | c-win32         | zig |     |
-| ------------- | --------------- | --- | --- |
-| thread-create | c               |     |     |
-| locks         | uv_barrier_wait |     |     |
-| queue-work    | `<unistd.h>`    |     |     |
-| queue-cancel  | `<unistd.h>`    |     |     |
-| progress      | `<unistd.h>`    |     |     |
+| name                                                                                     | c-win32         | zig |     |
+| ---------------------------------------------------------------------------------------- | --------------- | --- | --- |
+| [thread-create](https://github.com/libuv/libuv/blob/v1.x/docs/code/thread-create/main.c) | c               | o   |     |
+| [locks](https://github.com/libuv/libuv/blob/v1.x/docs/code/locks/main.c)                 | uv_barrier_wait |     |     |
+| [queue-work](https://github.com/libuv/libuv/blob/v1.x/docs/code/queue-work/main.c)       | `<unistd.h>`    |     |     |
+| [queue-cancel](https://github.com/libuv/libuv/blob/v1.x/docs/code/queue-cancel/main.c)   | `<unistd.h>`    |     |     |
+| [progress](https://github.com/libuv/libuv/blob/v1.x/docs/code/progress/main.c)           | `<unistd.h>`    |     |     |
 
 ### [Process](https://docs.libuv.org/en/v1.x/guide/process.html)
 
