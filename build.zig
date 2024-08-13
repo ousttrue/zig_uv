@@ -15,11 +15,12 @@ pub fn build(b: *std.Build) void {
             const exe = b.addExecutable(.{
                 .target = target,
                 .optimize = optimize,
-                .name = sample.name,
+                .name = sample,
             });
             // entry point
+            const c_main = libuv_dep.path(b.fmt("docs/code/{s}/main.c", .{sample}));
             exe.addCSourceFile(.{
-                .file = b.path(b.fmt("uvbook/{s}/main.c", .{sample.name})),
+                .file = c_main,
             });
             exe.addIncludePath(libuv.include);
             exe.linkLibrary(libuv.compile);
@@ -31,16 +32,16 @@ pub fn build(b: *std.Build) void {
             // run
             const run = b.addRunArtifact(exe);
             b.step(
-                b.fmt("c-{s}", .{sample.name}),
-                b.fmt("run {s}", .{sample.name}),
+                b.fmt("c-{s}", .{sample}),
+                b.fmt("run {s}", .{sample}),
             ).dependOn(&run.step);
         }
-        if (sample.get_zig(b)) |src| {
+        if (uvbook.get_zig(b, sample)) |src| {
             // zig
             const exe = b.addExecutable(.{
                 .target = target,
                 .optimize = optimize,
-                .name = sample.name,
+                .name = sample,
                 // entry point
                 .root_source_file = b.path(src),
             });
@@ -53,8 +54,8 @@ pub fn build(b: *std.Build) void {
             // run
             const run = b.addRunArtifact(exe);
             b.step(
-                b.fmt("zig-{s}", .{sample.name}),
-                b.fmt("run {s}", .{sample.name}),
+                b.fmt("zig-{s}", .{sample}),
+                b.fmt("run {s}", .{sample}),
             ).dependOn(&run.step);
         }
     }
