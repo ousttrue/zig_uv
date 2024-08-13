@@ -69,11 +69,11 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Filesystem](https://docs.libuv.org/en/v1.x/guide/filesystem.html)
 
-| name                                                                           | c-win32 | zig |                 |
-| ------------------------------------------------------------------------------ | ------- | --- | --------------- |
-| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o   |                 |
-| [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       | o   | dependency loop |
-| [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       |     |                 |
+| name                                                                           | c-win32 | zig |                   |
+| ------------------------------------------------------------------------------ | ------- | --- | ----------------- |
+| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o   |                   |
+| [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       | o   | `dependency loop` |
+| [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       | o   |                   |
 
 ### [Networking](https://docs.libuv.org/en/v1.x/guide/networking.html)
 
