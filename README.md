@@ -77,12 +77,12 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Networking](https://docs.libuv.org/en/v1.x/guide/networking.html)
 
-| name            | c-win32 | zig |     |
-| --------------- | ------- | --- | --- |
-| tcp-echo-server | o       |     |     |
-| udp-dhcp        | o       |     |     |
-| dns             | o       |     |     |
-| interfaces      | o       |     |     |
+| name                                                                                         | c-win32 | zig |              |
+| -------------------------------------------------------------------------------------------- | ------- | --- | ------------ |
+| [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o   | TODO: client |
+| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       |     |              |
+| [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       |     |              |
+| [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       |     |              |
 
 ### [Threads](https://docs.libuv.org/en/v1.x/guide/threads.html)
 
