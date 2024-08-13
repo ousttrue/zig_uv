@@ -32,8 +32,10 @@
             "name": "pdb",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/zig-out/bin/zig_uv.exe",
-            "args": [],
+            "program": "${workspaceFolder}/zig-out/bin/c_uvcat.exe",
+            "args": [
+                "RAEDME.md"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -61,6 +61,9 @@ fn buildC(
     }
     // run
     const run = b.addRunArtifact(exe);
+    if (b.args) |args| {
+        run.addArgs(args);
+    }
     b.step(
         b.fmt("c_{s}", .{name}),
         b.fmt("Build & run c_{s}", .{name}),
@@ -91,6 +94,9 @@ fn buildZig(
     }
     // run
     const run = b.addRunArtifact(exe);
+    if (b.args) |args| {
+        run.addArgs(args);
+    }
     b.step(
         b.fmt("zig_{s}", .{name}),
         b.fmt("Build & run zig_{s}", .{name}),

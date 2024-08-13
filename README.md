@@ -27,13 +27,23 @@ zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
 | name                                                                               | c-win32 | zig |     |
 | ---------------------------------------------------------------------------------- | ------- | --- | --- |
 | [helloworld](https://github.com/libuv/libuv/blob/v1.x/docs/code/helloworld/main.c) | o       | o   |     |
-| [idle-basic](https://github.com/libuv/libuv/blob/v1.x/docs/code/idle-basic/main.c) | o       |     |     |
+| [idle-basic](https://github.com/libuv/libuv/blob/v1.x/docs/code/idle-basic/main.c) | o       | o   |     |
 
 ### [Filesystem](https://docs.libuv.org/en/v1.x/guide/filesystem.html)
 
+patch for src/win/req-inl.h
+
+```c
+INLINE static uv_req_t* uv__overlapped_to_req(OVERLAPPED* overlapped) {
+  // cause illegal instruction
+  // return CONTAINING_RECORD(overlapped, uv_req_t, u.io.overlapped);
+  return (uv_req_t*)((char*)overlapped - offsetof(uv_req_t, u.io.overlapped));
+}
+```
+
 | name                                                                           | c-win32 | zig |     |
 | ------------------------------------------------------------------------------ | ------- | --- | --- |
-| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       |     |     |
+| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o   |     |
 | [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       |     |     |
 | [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       |     |     |
 

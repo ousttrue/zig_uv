@@ -43,7 +43,10 @@ const LIBUV_SOURCES_WINDOWS = [_][]const u8{
 };
 
 const LIBUV_DEFINITIONS_WINDOWS = [_][]const u8{
+    "-D_WIN32",
     "-DWIN32_LEAN_AND_MEAN",
+    // "-fno-strict-aliasing",
+    "-D_WIN32_WINNT=0x0600",
     // "-D_WIN32_WINNT=0x0602",
 };
 
@@ -55,7 +58,9 @@ const LIBUV_LIBS_WINDOWS = [_][]const u8{
     "userenv",
     "ws2_32",
     "ole32",
+    //
     "Dbghelp",
+    // "asan",
 };
 
 const LIBUV_SOURCES_UNIX = [_][]const u8{
@@ -105,8 +110,11 @@ const LIBUV_SOURCES_LINUX = [_][]const u8{
 
 const DEBUG_FLAGS = [_][]const u8{
     "-g",
-    "-Ilibuv/include",
-    "-Ilibuv/src",
+    // "-Ilibuv/include",
+    // "-Ilibuv/src",
+    "-fno-rtti",
+    // "-fsanitize=undefined,address",
+    "-fno-omit-frame-pointer",
 };
 
 pub const Lib = struct {
