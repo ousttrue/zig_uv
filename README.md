@@ -96,15 +96,15 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Process](https://docs.libuv.org/en/v1.x/guide/process.html)
 
-| name              | c-win32      | zig |              |
-| ----------------- | ------------ | --- | ------------ |
-| spawn             | o            |     |              |
-| detach            | o            |     |              |
-| signal            | `<unistd.h>` |     |              |
-| proc-streams      | o            |     |              |
-| cgi               | o            |     | and cgi/tick |
-| pipe-echo-server  | o            |     |              |
-| multi-echo-server | o            |     |              |
+| name                                                                                             | c-win32      | zig |              |
+| ------------------------------------------------------------------------------------------------ | ------------ | --- | ------------ |
+| [spawn](https://github.com/libuv/libuv/blob/v1.x/docs/code/spawn/main.c)                         | o            | o   |              |
+| [detach](https://github.com/libuv/libuv/blob/v1.x/docs/code/detach/main.c)                       | o            |     |              |
+| [signal](https://github.com/libuv/libuv/blob/v1.x/docs/code/signal/main.c)                       | `<unistd.h>` |     |              |
+| [proc-streams](https://github.com/libuv/libuv/blob/v1.x/docs/proc-streams/locks/main.c)          | o            |     |              |
+| [cgi](https://github.com/libuv/libuv/blob/v1.x/docs/code/cgi/main.c)                             | o            |     | and cgi/tick |
+| [pipe-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/pipe-echo-server/main.c)   | o            |     |              |
+| [multi-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/multi-echo-server/main.c) | o            |     |              |
 
 ### [Advanced event loops](https://docs.libuv.org/en/v1.x/guide/eventloops.html)
 
