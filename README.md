@@ -16,8 +16,8 @@ zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
 > zig build -l
   install (default)            Copy build artifacts to prefix path
   uninstall                    Remove build artifacts from prefix path
-  c-helloworld                 run helloworld
-  zig-helloworld               run c-helloworld
+  c_helloworld                 Build & run c_helloworld
+  zig_helloworld               Build & run zig_helloworld
 
 > zig build c-helloworld
 ```

@@ -11,52 +11,89 @@ pub fn build(b: *std.Build) void {
 
     for (uvbook.samples) |sample| {
         {
-            // c
-            const exe = b.addExecutable(.{
-                .target = target,
-                .optimize = optimize,
-                .name = sample,
-            });
-            // entry point
-            const c_main = libuv_dep.path(b.fmt("docs/code/{s}/main.c", .{sample}));
-            exe.addCSourceFile(.{
-                .file = c_main,
-            });
-            exe.addIncludePath(libuv.include);
-            exe.linkLibrary(libuv.compile);
-            // link for libuv
-            for (&libuv.windows_system_libs) |lib| {
-                exe.linkSystemLibrary(lib);
-            }
+            const src = libuv_dep.path(b.fmt("docs/code/{s}/main.c", .{sample}));
+            const exe = buildC(
+                b,
+                target,
+                optimize,
+                &libuv,
+                sample,
+                src,
+            );
             b.installArtifact(exe);
-            // run
-            const run = b.addRunArtifact(exe);
-            b.step(
-                b.fmt("c-{s}", .{sample}),
-                b.fmt("run {s}", .{sample}),
-            ).dependOn(&run.step);
         }
         if (uvbook.get_zig(b, sample)) |src| {
-            // zig
-            const exe = b.addExecutable(.{
-                .target = target,
-                .optimize = optimize,
-                .name = sample,
-                // entry point
-                .root_source_file = b.path(src),
-            });
-            exe.root_module.addImport("uv", &libuv.compile.root_module);
-            // link for libuv
-            for (&libuv.windows_system_libs) |lib| {
-                exe.linkSystemLibrary(lib);
-            }
+            const exe = buildZig(
+                b,
+                target,
+                optimize,
+                &libuv,
+                sample,
+                src,
+            );
             b.installArtifact(exe);
-            // run
-            const run = b.addRunArtifact(exe);
-            b.step(
-                b.fmt("zig-{s}", .{sample}),
-                b.fmt("run {s}", .{sample}),
-            ).dependOn(&run.step);
         }
     }
+}
+
+fn buildC(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+    libuv: *const build_uv.Lib,
+    name: []const u8,
+    src: std.Build.LazyPath,
+) *std.Build.Step.Compile {
+    const exe = b.addExecutable(.{
+        .target = target,
+        .optimize = optimize,
+        .name = b.fmt("c_{s}", .{name}),
+    });
+    // entry point
+    exe.addCSourceFile(.{
+        .file = src,
+    });
+    exe.addIncludePath(libuv.include);
+    exe.linkLibrary(libuv.compile);
+    // link for libuv
+    for (&libuv.windows_system_libs) |lib| {
+        exe.linkSystemLibrary(lib);
+    }
+    // run
+    const run = b.addRunArtifact(exe);
+    b.step(
+        b.fmt("c_{s}", .{name}),
+        b.fmt("Build & run c_{s}", .{name}),
+    ).dependOn(&run.step);
+    return exe;
+}
+
+fn buildZig(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+    libuv: *const build_uv.Lib,
+    name: []const u8,
+    src: []const u8,
+) *std.Build.Step.Compile {
+    // zig
+    const exe = b.addExecutable(.{
+        .target = target,
+        .optimize = optimize,
+        .name = b.fmt("zig_{s}", .{name}),
+        // entry point
+        .root_source_file = b.path(src),
+    });
+    exe.root_module.addImport("uv", &libuv.compile.root_module);
+    // link for libuv
+    for (&libuv.windows_system_libs) |lib| {
+        exe.linkSystemLibrary(lib);
+    }
+    // run
+    const run = b.addRunArtifact(exe);
+    b.step(
+        b.fmt("zig_{s}", .{name}),
+        b.fmt("Build & run zig_{s}", .{name}),
+    ).dependOn(&run.step);
+    return exe;
 }
