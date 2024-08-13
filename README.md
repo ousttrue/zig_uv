@@ -5,7 +5,7 @@
 ## dependencies
 
 ```sh
-zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
+> zig fetch --save=libuv git+https://github.com/libuv/libuv.git#v1.48.0
 ```
 
 ## uvbook
@@ -40,6 +40,10 @@ INLINE static uv_req_t* uv__overlapped_to_req(OVERLAPPED* overlapped) {
   return (uv_req_t*)((char*)overlapped - offsetof(uv_req_t, u.io.overlapped));
 }
 ```
+
+same https://github.com/libuv/libuv/pull/4254
+
+merged 2024/08/06
 
 | name                                                                           | c-win32 | zig |     |
 | ------------------------------------------------------------------------------ | ------- | --- | --- |
