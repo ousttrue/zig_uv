@@ -108,9 +108,9 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Advanced event loops](https://docs.libuv.org/en/v1.x/guide/eventloops.html)
 
-| name   | c-win32 | zig |     |
-| ------ | ------- | --- | --- |
-| uvstop | o       |     |     |
+| name                                                                       | c-win32 | zig |     |
+| -------------------------------------------------------------------------- | ------- | --- | --- |
+| [uvstop](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvstop/main.c) | o       | x   |     |
 
 ### [Utilities](https://docs.libuv.org/en/v1.x/guide/utilities.html)
 
