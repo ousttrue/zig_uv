@@ -7,9 +7,27 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const libuv_dep = b.dependency("libuv", .{});
+
     const libuv = build_uv.build(b, target, optimize, libuv_dep);
 
-    const translated = buildTranslated(b, target, optimize);
+    // translated: from translate-c
+    const translated = buildTranslated(
+        b,
+        target,
+        optimize,
+        b.path("translated.zig"),
+    );
+
+    // generated: from libclang
+    const generated_zig = b.path("generated.zig");
+    const generate_step = generate(b, libuv_dep, generated_zig);
+    const generated = buildGenerated(
+        b,
+        target,
+        optimize,
+        generated_zig,
+    );
+    generated.step.dependOn(generate_step);
 
     for (uvbook.samples) |sample| {
         {
@@ -34,15 +52,55 @@ pub fn build(b: *std.Build) void {
                 src,
             );
             exe.root_module.addImport("translated", &translated.root_module);
+            exe.root_module.addImport("generated", &generated.root_module);
+            exe.step.dependOn(&generated.step);
             b.installArtifact(exe);
         }
     }
+}
+
+fn generate(
+    b: *std.Build,
+    libuv_dep: *std.Build.Dependency,
+    root_source_file: std.Build.LazyPath,
+) *std.Build.Step {
+    // make generator
+    const tool = b.addExecutable(.{
+        .target = b.host,
+        .name = "generator",
+        .root_source_file = b.path("generator/main.zig"),
+    });
+    tool.linkLibC();
+    // run: generator src.h dst.zig
+    const tool_step = b.addRunArtifact(tool);
+    tool_step.addFileArg(libuv_dep.path("include/uv.h"));
+    tool_step.addFileArg(root_source_file);
+    // const output = tool_step.addOutputFileArg("generated.zig");
+    // const output = tool_step.captureStdOut();
+    // output
+    return &tool_step.step;
+}
+
+fn buildGenerated(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+    root_source_file: std.Build.LazyPath,
+) *std.Build.Step.Compile {
+    const lib = b.addStaticLibrary(.{
+        .target = target,
+        .optimize = optimize,
+        .name = "generated",
+        .root_source_file = root_source_file,
+    });
+    return lib;
 }
 
 fn buildTranslated(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
+    root_source_file: std.Build.LazyPath,
 ) *std.Build.Step.Compile {
     // > zig translate-c
     // -I "zig\0.13.0\files\lib\include"
@@ -53,7 +111,7 @@ fn buildTranslated(
         .target = target,
         .optimize = optimize,
         .name = "translated",
-        .root_source_file = b.path("translated.zig"),
+        .root_source_file = root_source_file,
     });
     return lib;
 }
