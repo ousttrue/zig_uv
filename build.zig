@@ -71,8 +71,12 @@ fn generate(
         .root_source_file = b.path("generator/main.zig"),
     });
     tool.linkLibC();
+    tool.addIncludePath(.{ .cwd_relative = "C:/Program Files/LLVM/include" });
+    tool.addLibraryPath(.{ .cwd_relative = "C:/Program Files/LLVM/lib" });
+    tool.linkSystemLibrary("libclang");
     // run: generator src.h dst.zig
     const tool_step = b.addRunArtifact(tool);
+    tool_step.addPathDir("C:/Program Files/LLVM/bin");
     tool_step.addFileArg(libuv_dep.path("include/uv.h"));
     tool_step.addFileArg(root_source_file);
     // const output = tool_step.addOutputFileArg("generated.zig");
