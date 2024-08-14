@@ -69,20 +69,20 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Filesystem](https://docs.libuv.org/en/v1.x/guide/filesystem.html)
 
-| name                                                                           | c-win32 | zig |                   |
-| ------------------------------------------------------------------------------ | ------- | --- | ----------------- |
-| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o   |                   |
-| [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       | o   | `dependency loop` |
-| [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       | o   |                   |
+| name                                                                           | c-win32 | zig |            |
+| ------------------------------------------------------------------------------ | ------- | --- | ---------- |
+| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o   |            |
+| [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       | o   | translated |
+| [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       | o   |            |
 
 ### [Networking](https://docs.libuv.org/en/v1.x/guide/networking.html)
 
-| name                                                                                         | c-win32 | zig |                |
-| -------------------------------------------------------------------------------------------- | ------- | --- | -------------- |
-| [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o   | TODO: client   |
-| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o   |                |
-| [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       | x   | TODO: not work |
-| [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       | x   | @cimport error |
+| name                                                                                         | c-win32 | zig |                          |
+| -------------------------------------------------------------------------------------------- | ------- | --- | ------------------------ |
+| [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o   | translated, TODO: client |
+| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o   |                          |
+| [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       | x   | TODO: not work           |
+| [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       | x   | @cimport error           |
 
 ### [Threads](https://docs.libuv.org/en/v1.x/guide/threads.html)
 
@@ -114,11 +114,11 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 ### [Utilities](https://docs.libuv.org/en/v1.x/guide/utilities.html)
 
-| name         | c-win32    | zig |                    |
-| ------------ | ---------- | --- | ------------------ |
-| ref-timer    | o          |     |                    |
-| idle-compute | o          |     |                    |
-| uvwget       | `<curl.h>` |     |                    |
-| plugin       | o          |     | and plugin/hello.c |
-| tty          | o          |     |                    |
-| tty-gravity  | o          |     |                    |
+| name                                                                                     | c-win32    | zig |                    |
+| ---------------------------------------------------------------------------------------- | ---------- | --- | ------------------ |
+| [ ref-timer ](https://github.com/libuv/libuv/blob/v1.x/docs/code/ref-timer/main.c)       | o          |     |                    |
+| [ idle-compute ](https://github.com/libuv/libuv/blob/v1.x/docs/code/idle-compute/main.c) | o          |     |                    |
+| [ uvwget ](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvwget/main.c)             | `<curl.h>` |     |                    |
+| [ plugin ](https://github.com/libuv/libuv/blob/v1.x/docs/code/plugin/main.c)             | o          |     | and plugin/hello.c |
+| [ tty ](https://github.com/libuv/libuv/blob/v1.x/docs/code/tty/main.c)                   | o          |     |                    |
+| [ tty-gravity ](https://github.com/libuv/libuv/blob/v1.x/docs/code/tty-gravity/main.c)   | o          | o   | translated         |
