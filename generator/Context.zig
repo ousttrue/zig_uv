@@ -48,9 +48,10 @@ fn push(self: *@This(), cursor: c.CXCursor, parent: c.CXCursor) bool {
     }) catch @panic("put");
 
     const level = self.get_cursor_level(cursor);
-    std.debug.print("{s}=>[{}]{s}\n", .{
+    const spelling = c.clang_getCursorSpelling(cursor);
+    std.debug.print("{s}{s}: {s}\n", .{
         make_indent(level),
-        level,
+        c.clang_getCString(spelling),
         @tagName(kind),
     });
 
