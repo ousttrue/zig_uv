@@ -5,3 +5,4 @@ c.lib*
 libc.*
 libuv-v1.48.0
 generated.zig
+Makefile

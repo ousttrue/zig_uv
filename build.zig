@@ -1,33 +1,29 @@
 const std = @import("std");
-const build_uv = @import("build_uv.zig");
 const uvbook = @import("build_uvbook.zig");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const libuv_dep = b.dependency("libuv", .{});
+    const zig_uv_dep = b.dependency("zig_uv", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zig_uv = zig_uv_dep.artifact("zig_uv");
+    const translated_mod = zig_uv_dep.module("translated");
 
-    const libuv = build_uv.build(b, target, optimize, libuv_dep);
-
-    // translated: from translate-c
-    const translated = buildTranslated(
-        b,
-        target,
-        optimize,
-        b.path("translated.zig"),
-    );
+    const libuv_dep = zig_uv_dep.builder.dependency("libuv", .{});
 
     // generated: from libclang
-    const generated_zig = b.path("generated.zig");
-    const generate_step = generate(b, libuv_dep, generated_zig);
-    const generated = buildGenerated(
-        b,
-        target,
-        optimize,
-        generated_zig,
-    );
-    generated.step.dependOn(generate_step);
+    // const generated_zig = b.path("generated.zig");
+    // const generate_step = generate(b, libuv_dep, generated_zig);
+    // const generated = buildGenerated(
+    //     b,
+    //     target,
+    //     optimize,
+    //     generated_zig,
+    // );
+    // generated.step.dependOn(generate_step);
 
     for (uvbook.samples) |sample| {
         {
@@ -36,8 +32,9 @@ pub fn build(b: *std.Build) void {
                 b,
                 target,
                 optimize,
-                &libuv,
                 sample,
+                libuv_dep.path("include"),
+                zig_uv,
                 src,
             );
             b.installArtifact(exe);
@@ -47,13 +44,11 @@ pub fn build(b: *std.Build) void {
                 b,
                 target,
                 optimize,
-                &libuv,
+                translated_mod,
+                zig_uv,
                 sample,
                 src,
             );
-            exe.root_module.addImport("translated", &translated.root_module);
-            exe.root_module.addImport("generated", &generated.root_module);
-            exe.step.dependOn(&generated.step);
             b.installArtifact(exe);
         }
     }
@@ -100,32 +95,13 @@ fn buildGenerated(
     return lib;
 }
 
-fn buildTranslated(
-    b: *std.Build,
-    target: std.Build.ResolvedTarget,
-    optimize: std.builtin.OptimizeMode,
-    root_source_file: std.Build.LazyPath,
-) *std.Build.Step.Compile {
-    // > zig translate-c
-    // -I "zig\0.13.0\files\lib\include"
-    // -I "zig\0.13.0\files\lib\libc\include\any-windows-any"
-    // -I LOCALAPPDIR\zig\p\122023c580b23f2c7e08dbcab26190ac4b503f1516f702013821475817289088b585\include > translated.zig
-    // LOCALAPPDIR\zig\p\122023c580b23f2c7e08dbcab26190ac4b503f1516f702013821475817289088b585\include\uv.h
-    const lib = b.addStaticLibrary(.{
-        .target = target,
-        .optimize = optimize,
-        .name = "translated",
-        .root_source_file = root_source_file,
-    });
-    return lib;
-}
-
 fn buildC(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    libuv: *const build_uv.Lib,
     name: []const u8,
+    libuv_include: std.Build.LazyPath,
+    libuv_compile: *std.Build.Step.Compile,
     src: std.Build.LazyPath,
 ) *std.Build.Step.Compile {
     const exe = b.addExecutable(.{
@@ -137,12 +113,8 @@ fn buildC(
     exe.addCSourceFile(.{
         .file = src,
     });
-    exe.addIncludePath(libuv.include);
-    exe.linkLibrary(libuv.compile);
-    // link for libuv
-    for (&libuv.windows_system_libs) |lib| {
-        exe.linkSystemLibrary(lib);
-    }
+    exe.addIncludePath(libuv_include);
+    exe.linkLibrary(libuv_compile);
     // run
     const run = b.addRunArtifact(exe);
     if (b.args) |args| {
@@ -159,7 +131,8 @@ fn buildZig(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
-    libuv: *const build_uv.Lib,
+    translated: *std.Build.Module,
+    libuv_compile: *std.Build.Step.Compile,
     name: []const u8,
     src: []const u8,
 ) *std.Build.Step.Compile {
@@ -171,11 +144,8 @@ fn buildZig(
         // entry point
         .root_source_file = b.path(src),
     });
-    exe.root_module.addImport("uv", &libuv.compile.root_module);
-    // link for libuv
-    for (&libuv.windows_system_libs) |lib| {
-        exe.linkSystemLibrary(lib);
-    }
+    exe.root_module.addImport("uv", &libuv_compile.root_module);
+    exe.root_module.addImport("translated", translated);
     // run
     const run = b.addRunArtifact(exe);
     if (b.args) |args| {
