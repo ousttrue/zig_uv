@@ -1,7 +1,7 @@
 const std = @import("std");
 const build_uv = @import("build_uv.zig");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -17,15 +17,17 @@ pub fn build(b: *std.Build) void {
     lib.linkLibC();
     lib.addIncludePath(libuv_dep.path("include"));
     lib.addIncludePath(libuv_dep.path("src"));
-    for (build_uv.LIBUV_SOURCES ++ build_uv.LIBUV_SOURCES_WINDOWS) |src| {
+
+    for (try build_uv.getSources(b, target)) |src| {
         lib.addCSourceFile(.{
             .file = libuv_dep.path(src),
-            .flags = &(build_uv.LIBUV_DEFINITIONS_WINDOWS ++ build_uv.DEBUG_FLAGS),
+            .flags = try build_uv.getFlags(b, target, optimize),
         });
     }
-    for (build_uv.LIBUV_LIBS_WINDOWS) |link| {
+    for (try build_uv.getLibs(target)) |link| {
         lib.linkSystemLibrary(link);
     }
+
     _ = b.addModule("translated", .{
         .target = target,
         .optimize = optimize,

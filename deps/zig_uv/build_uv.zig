@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub const LIBUV_SOURCES = [_][]const u8{
+const LIBUV_SOURCES = [_][]const u8{
     "src/fs-poll.c",
     "src/idna.c",
     "src/inet.c",
@@ -14,7 +14,7 @@ pub const LIBUV_SOURCES = [_][]const u8{
     "src/version.c",
 };
 
-pub const LIBUV_SOURCES_WINDOWS = [_][]const u8{
+const LIBUV_SOURCES_WINDOWS = [_][]const u8{
     "src/win/async.c",
     "src/win/core.c",
     "src/win/detect-wakeup.c",
@@ -42,28 +42,7 @@ pub const LIBUV_SOURCES_WINDOWS = [_][]const u8{
     "src/win/winsock.c",
 };
 
-pub const LIBUV_DEFINITIONS_WINDOWS = [_][]const u8{
-    "-D_WIN32",
-    "-DWIN32_LEAN_AND_MEAN",
-    // "-fno-strict-aliasing",
-    "-D_WIN32_WINNT=0x0600",
-    // "-D_WIN32_WINNT=0x0602",
-};
-
-pub const LIBUV_LIBS_WINDOWS = [_][]const u8{
-    "psapi",
-    "user32",
-    "advapi32",
-    "iphlpapi",
-    "userenv",
-    "ws2_32",
-    "ole32",
-    //
-    "Dbghelp",
-    // "asan",
-};
-
-pub const LIBUV_SOURCES_UNIX = [_][]const u8{
+const LIBUV_SOURCES_UNIX = [_][]const u8{
     "src/unix/async.c",
     "src/unix/core.c",
     "src/unix/dl.c",
@@ -85,30 +64,50 @@ pub const LIBUV_SOURCES_UNIX = [_][]const u8{
     "src/unix/proctitle.c",
 };
 
-pub const LIBUV_DEFINITIONS_UNIX = [_][]const u8{
+const LIBUV_SOURCES_LINUX = [_][]const u8{
+    // "src/unix/linux-core.c",
+    // "src/unix/linux-inotify.c",
+    // "src/unix/linux-syscalls.c",
+    "src/unix/procfs-exepath.c",
+    "src/unix/random-getrandom.c",
+    "src/unix/random-sysctl-linux.c",
+    // "src/unix/epoll.c",
+};
+
+pub fn getSources(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+) ![]const []const u8 {
+    var list = std.ArrayList([]const u8).init(b.allocator);
+    try list.appendSlice(&LIBUV_SOURCES);
+    switch (target.result.os.tag) {
+        .windows => try list.appendSlice(&LIBUV_SOURCES_WINDOWS),
+        else => {
+            try list.appendSlice(&LIBUV_SOURCES_UNIX);
+            try list.appendSlice(&LIBUV_SOURCES_LINUX);
+        },
+    }
+    return list.toOwnedSlice();
+}
+
+const LIBUV_DEFINITIONS_WINDOWS = [_][]const u8{
+    "-D_WIN32",
+    "-DWIN32_LEAN_AND_MEAN",
+    // "-fno-strict-aliasing",
+    "-D_WIN32_WINNT=0x0600",
+    // "-D_WIN32_WINNT=0x0602",
+};
+
+const LIBUV_DEFINITIONS_UNIX = [_][]const u8{
     // "-D_FILE_OFFSET_BITS=64",
     "-D_LARGEFILE_SOURCE",
 };
 
-pub const LIBUV_DEFINITIONS_LINUX = [_][]const u8{
+const LIBUV_DEFINITIONS_LINUX = [_][]const u8{
     "-D_GNU_SOURCE", "-D_POSIX_C_SOURCE=200112",
 };
 
-pub const LIBUV_LIBS_LINUX = [_][]const u8{
-    "dl", "rt",
-};
-
-pub const LIBUV_SOURCES_LINUX = [_][]const u8{
-    "src/unix/linux-core.c",
-    "src/unix/linux-inotify.c",
-    "src/unix/linux-syscalls.c",
-    "src/unix/procfs-exepath.c",
-    "src/unix/random-getrandom.c",
-    "src/unix/random-sysctl-linux.c",
-    "src/unix/epoll.c",
-};
-
-pub const DEBUG_FLAGS = [_][]const u8{
+const DEBUG_FLAGS = [_][]const u8{
     "-g",
     // "-Ilibuv/include",
     // "-Ilibuv/src",
@@ -116,3 +115,48 @@ pub const DEBUG_FLAGS = [_][]const u8{
     // "-fsanitize=undefined,address",
     "-fno-omit-frame-pointer",
 };
+
+pub fn getFlags(
+    b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) ![]const []const u8 {
+    var list = std.ArrayList([]const u8).init(b.allocator);
+    switch (target.result.os.tag) {
+        .windows => {
+            try list.appendSlice(&LIBUV_DEFINITIONS_WINDOWS);
+        },
+        else => {
+            try list.appendSlice(&LIBUV_DEFINITIONS_UNIX);
+            try list.appendSlice(&LIBUV_DEFINITIONS_LINUX);
+        },
+    }
+    if (optimize == .Debug) {
+        try list.appendSlice(&DEBUG_FLAGS);
+    }
+    return list.toOwnedSlice();
+}
+
+const LIBUV_LIBS_WINDOWS = [_][]const u8{
+    "psapi",
+    "user32",
+    "advapi32",
+    "iphlpapi",
+    "userenv",
+    "ws2_32",
+    "ole32",
+    //
+    "Dbghelp",
+    // "asan",
+};
+
+const LIBUV_LIBS_LINUX = [_][]const u8{
+    "dl", "rt",
+};
+
+pub fn getLibs(target: std.Build.ResolvedTarget) ![]const []const u8 {
+    return &(switch (target.result.os.tag) {
+        .windows => LIBUV_LIBS_WINDOWS,
+        else => LIBUV_LIBS_LINUX,
+    });
+}
