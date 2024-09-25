@@ -11,10 +11,15 @@ pub fn build(b: *std.Build) void {
     });
     const zig_uv = zig_uv_dep.artifact("zig_uv");
     b.installArtifact(zig_uv);
+    const translated_mod = zig_uv_dep.module("translated");
+    _ = b.addModule("uv", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = translated_mod.root_source_file,
+    });
 
     if (b.option(bool, "uvbook", "build uvbook samples") orelse false) {
         const uvbook_dep = b.dependency("uvbook", .{});
-        const translated_mod = zig_uv_dep.module("translated");
         const libuv_dep = zig_uv_dep.builder.dependency("libuv", .{});
         for (uvbook.samples) |sample| {
             {
