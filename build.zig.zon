@@ -5,6 +5,9 @@
         .zig_uv = .{
             .path = "deps/zig_uv",
         },
+        .uvbook = .{
+            .path = "deps/uvbook",
+        },
     },
     .paths = .{
         "build.zig",
