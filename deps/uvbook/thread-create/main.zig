@@ -21,8 +21,8 @@ export fn tortoise(arg: ?*anyopaque) void {
 
 pub fn main() void {
     var tracklen: c_int = 10;
-    var hare_id: uv.uv_thread_t = null;
-    var tortoise_id: uv.uv_thread_t = null;
+    var hare_id: uv.uv_thread_t = undefined;
+    var tortoise_id: uv.uv_thread_t = undefined;
     _ = uv.uv_thread_create(&hare_id, hare, &tracklen);
     _ = uv.uv_thread_create(&tortoise_id, tortoise, &tracklen);
 

@@ -65,13 +65,10 @@ const LIBUV_SOURCES_UNIX = [_][]const u8{
 };
 
 const LIBUV_SOURCES_LINUX = [_][]const u8{
-    // "src/unix/linux-core.c",
-    // "src/unix/linux-inotify.c",
-    // "src/unix/linux-syscalls.c",
+    "src/unix/linux.c",
     "src/unix/procfs-exepath.c",
     "src/unix/random-getrandom.c",
     "src/unix/random-sysctl-linux.c",
-    // "src/unix/epoll.c",
 };
 
 pub fn getSources(
