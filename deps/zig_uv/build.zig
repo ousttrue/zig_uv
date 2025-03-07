@@ -24,7 +24,7 @@ pub fn build(b: *std.Build) !void {
             .flags = try build_uv.getFlags(b, target, optimize),
         });
     }
-    for (try build_uv.getLibs(target)) |link| {
+    for (try build_uv.getLibs(target, optimize)) |link| {
         lib.linkSystemLibrary(link);
     }
 

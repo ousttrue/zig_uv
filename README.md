@@ -2,6 +2,12 @@
 
 `zig-0.13.0`
 
+## zig-0.14.0
+
+```
+error: lld-link: undefined symbol: __declspec(dllimport) _CrtSetReportHook
+```
+
 ## dependencies
 
 `master required` `v1.48.0` has CONTAINING_RECORD issue.

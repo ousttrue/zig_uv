@@ -151,9 +151,9 @@ const LIBUV_LIBS_LINUX = [_][]const u8{
     "dl", "rt",
 };
 
-pub fn getLibs(target: std.Build.ResolvedTarget) ![]const []const u8 {
+pub fn getLibs(target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) ![]const []const u8 {
     return &(switch (target.result.os.tag) {
-        .windows => LIBUV_LIBS_WINDOWS,
+        .windows => if (optimize == .Debug) LIBUV_LIBS_WINDOWS ++ .{"ucrtbased"} else LIBUV_LIBS_WINDOWS,
         else => LIBUV_LIBS_LINUX,
     });
 }

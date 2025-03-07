@@ -1,5 +1,6 @@
 .{
-    .name = "zig_uv",
+    .name = .zig_uv,
+    .fingerprint = 0xa56665b57559ea91,
     .version = "0.0.0",
     .dependencies = .{
         .zig_uv = .{

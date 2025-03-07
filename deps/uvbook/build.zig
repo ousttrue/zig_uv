@@ -61,7 +61,7 @@ pub fn buildZig(
         // entry point
         .root_source_file = uvbook_dep.path(src),
     });
-    exe.root_module.addImport("uv", &libuv_compile.root_module);
+    exe.root_module.addImport("uv", libuv_compile.root_module);
     exe.root_module.addImport("translated", translated);
     return exe;
 }
