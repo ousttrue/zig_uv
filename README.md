@@ -37,7 +37,7 @@ same https://github.com/libuv/libuv/pull/4254
 
 merged 2024/08/06
 
-### uv_pipe_t has dependency loop
+### error: dependency loop detected
 
 - https://github.com/ziglang/zig/issues/18247
 
@@ -80,7 +80,7 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 | name                                                                           | c-win32 | zig          |
 | ------------------------------------------------------------------------------ | ------- | ------------ |
-| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o            |
+| [uvcat](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvcat/main.c)       | o       | o translated |
 | [uvtee](https://github.com/libuv/libuv/blob/v1.x/docs/code/uvtee/main.c)       | o       | o translated |
 | [onchange](https://github.com/libuv/libuv/blob/v1.x/docs/code/onchange/main.c) | o       | o            |
 

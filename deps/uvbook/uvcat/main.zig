@@ -1,5 +1,6 @@
 const std = @import("std");
-const uv = @import("uv");
+// const uv = @import("uv");
+const uv = @import("translated");
 
 var open_req = uv.uv_fs_t{};
 var read_req = uv.uv_fs_t{};
@@ -9,7 +10,8 @@ var buffer: [1024]u8 = undefined;
 
 var iov = uv.uv_buf_t{};
 
-export fn on_write(req: [*c]uv.uv_fs_t) void {
+export fn on_write(_req: *anyopaque) void {
+    const req: [*c]uv.uv_fs_t = @ptrCast(@alignCast(_req));
     if (req.*.result < 0) {
         std.debug.print("Write error: {s}\n", .{uv.uv_strerror(@intCast(req.*.result))});
     } else {
@@ -25,7 +27,8 @@ export fn on_write(req: [*c]uv.uv_fs_t) void {
     }
 }
 
-export fn on_read(req: [*c]uv.uv_fs_t) void {
+export fn on_read(_req: *anyopaque) void {
+    const req: [*c]uv.uv_fs_t = @ptrCast(@alignCast(_req));
     if (req.*.result < 0) {
         std.debug.print("Read error: {s}\n", .{uv.uv_strerror(@intCast(req.*.result))});
     } else if (req.*.result == 0) {
@@ -38,7 +41,8 @@ export fn on_read(req: [*c]uv.uv_fs_t) void {
     }
 }
 
-export fn on_open(req: [*c]uv.uv_fs_t) void {
+export fn on_open(_req: *anyopaque) void {
+    const req: [*c]uv.uv_fs_t = @ptrCast(@alignCast(_req));
     // The request passed to the callback is the same as the one the call setup
     // function was passed.
     std.debug.assert(req == &open_req);
