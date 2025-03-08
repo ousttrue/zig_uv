@@ -18,6 +18,21 @@ pub fn build(b: *std.Build) void {
         .root_source_file = translated_mod.root_source_file,
     });
 
+    {
+        const libuv_dep = zig_uv_dep.builder.dependency("libuv", .{});
+        const t = b.addTranslateC(.{
+            .target = target,
+            .optimize = optimize,
+            .root_source_file = libuv_dep.path("include/uv.h"),
+        });
+        t.addIncludePath(libuv_dep.path("include"));
+
+        const install = b.addInstallFile(t.getOutput(), "translated.zig");
+
+        const step = b.step("translate", "make zig-out/translated.zig");
+        step.dependOn(&install.step);
+    }
+
     if (b.option(bool, "uvbook", "build uvbook samples") orelse false) {
         const uvbook_dep = b.dependency("uvbook", .{});
         const libuv_dep = zig_uv_dep.builder.dependency("libuv", .{});

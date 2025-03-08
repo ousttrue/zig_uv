@@ -6,6 +6,9 @@
 
 ```
 error: lld-link: undefined symbol: __declspec(dllimport) _CrtSetReportHook
+
+#if debug
+  add link to ucrtbased
 ```
 
 ## dependencies
