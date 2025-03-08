@@ -28,7 +28,8 @@ export fn on_close(handle: [*c]uv.uv_handle_t) void {
     std.c.free(handle);
 }
 
-export fn echo_write(req: [*c]uv.uv_write_t, status: c_int) void {
+export fn echo_write(_req: *anyopaque, status: c_int) void {
+    const req: [*c]uv.uv_write_t = @ptrCast(@alignCast(_req));
     if (status != 0) {
         std.debug.print("Write error {s}\n", .{uv.uv_strerror(status)});
     }

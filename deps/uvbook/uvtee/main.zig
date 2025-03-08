@@ -23,11 +23,13 @@ fn free_write_req(req: [*c]uv.uv_write_t) void {
     std.c.free(wr);
 }
 
-export fn on_stdout_write(req: [*c]uv.uv_write_t, _: c_int) void {
+export fn on_stdout_write(_req: *anyopaque, _: c_int) void {
+    const req: [*c]uv.uv_write_t = @ptrCast(@alignCast(_req));
     free_write_req(req);
 }
 
-export fn on_file_write(req: [*c]uv.uv_write_t, _: c_int) void {
+export fn on_file_write(_req: *anyopaque, _: c_int) void {
+    const req: [*c]uv.uv_write_t = @ptrCast(@alignCast(_req));
     free_write_req(req);
 }
 

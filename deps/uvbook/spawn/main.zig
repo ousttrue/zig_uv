@@ -1,11 +1,13 @@
 const std = @import("std");
-const uv = @import("uv");
+// const uv = @import("uv");
+const uv = @import("translated");
 
 var loop: *uv.uv_loop_t = undefined;
 var child_req = uv.uv_process_t{};
 var options = uv.uv_process_options_t{};
 
-export fn on_exit(req: [*c]uv.uv_process_t, exit_status: i64, term_signal: c_int) void {
+export fn on_exit(_req: *anyopaque, exit_status: i64, term_signal: c_int) void {
+    const req: [*c]uv.uv_process_t = @ptrCast(@alignCast(_req));
     std.debug.print("Process exited with status {}, signal {}\n", .{ exit_status, term_signal });
     _ = uv.uv_close(@ptrCast(req), null);
 }

@@ -89,7 +89,7 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 | name                                                                                         | c-win32 | zig                        |
 | -------------------------------------------------------------------------------------------- | ------- | -------------------------- |
 | [tcp-echo-server](https://github.com/libuv/libuv/blob/v1.x/docs/code/tcp-echo-server/main.c) | o       | o translated, TODO: client |
-| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o                          |
+| [udp-dhcp](https://github.com/libuv/libuv/blob/v1.x/docs/code/udp-dhcp/main.c)               | o       | o translated               |
 | [dns](https://github.com/libuv/libuv/blob/v1.x/docs/code/dns/main.c)                         | o       | o TODO: not work           |
 | [interfaces](https://github.com/libuv/libuv/blob/v1.x/docs/code/interfaces/main.c)           | o       | x @cimport error           |
 
@@ -107,7 +107,7 @@ pub const uv_read_cb = ?*const fn (*anyopaque, isize, [*c]const uv_buf_t) callco
 
 | name                                                                                             | c-win32      | zig          |
 | ------------------------------------------------------------------------------------------------ | ------------ | ------------ |
-| [spawn](https://github.com/libuv/libuv/blob/v1.x/docs/code/spawn/main.c)                         | o            | o            |
+| [spawn](https://github.com/libuv/libuv/blob/v1.x/docs/code/spawn/main.c)                         | o            | o translated |
 | [detach](https://github.com/libuv/libuv/blob/v1.x/docs/code/detach/main.c)                       | o            |              |
 | [signal](https://github.com/libuv/libuv/blob/v1.x/docs/code/signal/main.c)                       | `<unistd.h>` |              |
 | [proc-streams](https://github.com/libuv/libuv/blob/v1.x/docs/proc-streams/locks/main.c)          | o            |              |

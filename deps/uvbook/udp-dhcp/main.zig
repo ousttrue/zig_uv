@@ -1,5 +1,6 @@
 const std = @import("std");
-const uv = @import("uv");
+// const uv = @import("uv");
+const uv = @import("translated");
 
 var loop: *uv.uv_loop_t = undefined;
 var send_socket = uv.uv_udp_t{};
